@@ -25,7 +25,7 @@ const app = express();
 app.use(
   cors({
      origin: [
-      "http://localhost:3000",
+      "https://thakurgym.netlify.app",
       "http://192.168.0.118:3000",
     ], // frontend
     credentials: true,
