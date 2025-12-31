@@ -26,7 +26,7 @@ app.use(
   cors({
      origin: [
       "https://thakurgym.netlify.app",
-      "http://192.168.0.118:3000",
+      "http://192.168.29.68:3000",
     ], // frontend
     credentials: true,
   })
