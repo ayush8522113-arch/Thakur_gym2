@@ -89,7 +89,7 @@ export const verifyPayment = async (req, res) => {
 export const getPendingMemberships = async (req, res) => {
     console.log("🔥 ADMIN FETCH HIT");
   console.log("🔥 ADMIN USER 👉", req.user);
-  const payments = await Payment.find({ status: "paid" })
+  const payments = await Payment.find( {status: { $ne: "approved" } })
     .populate("user", "name email")
     .sort({ createdAt: -1 });
 
