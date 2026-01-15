@@ -87,9 +87,13 @@ export const verifyPayment = async (req, res) => {
    ADMIN: GET PAID PAYMENTS
 ============================ */
 export const getPendingMemberships = async (req, res) => {
+    console.log("🔥 ADMIN FETCH HIT");
+  console.log("🔥 ADMIN USER 👉", req.user);
   const payments = await Payment.find({ status: "paid" })
     .populate("user", "name email")
     .sort({ createdAt: -1 });
+
+console.log("🔥 PAYMENTS FOUND 👉", payments.length);
 
   res.json(payments);
 };
