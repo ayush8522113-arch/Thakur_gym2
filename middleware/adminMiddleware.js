@@ -1,6 +1,6 @@
-const User = require("../models/User");
+import User from "../models/User.js";
 
- exports.adminOnly = async (req, res, next) => {
+  export const adminOnly = async (req, res, next) => {
   try {
     const user = await User.findById(req.user);
 
@@ -14,4 +14,4 @@ const User = require("../models/User");
   }
 };
 
-
+export default adminOnly;

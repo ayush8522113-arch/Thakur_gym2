@@ -1,10 +1,12 @@
 console.log("ADMIN STATS ROUTES LOADED");
 
-
+import dotenv from "dotenv";
+dotenv.config();
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
+
 import connectDB from "./config/db.js";
+import membershipExpiryJob from "./cron/membershipExpiry.cron.js";
 
 
 import manualUserRoutes from "./routes/manualUserRoutes.js";
@@ -14,10 +16,10 @@ import bookingRoutes from "./routes/bookingRoutes.js";
 import adminStatsRoutes from "./routes/adminStatsRoutes.js"
 import userRoutes from "./routes/userRoutes.js";
 import contactRoutes from "./routes/contactRoutes.js";
+import paymentRoutes from "./routes/payment.routes.js";
+import membershipRoutes from "./routes/membership.routes.js";
 
 
-
-dotenv.config();
 connectDB();
 
 const app = express();
@@ -47,10 +49,12 @@ app.use("/api/users", authRoutes);
 app.use("/api/admin/stats", adminStatsRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/contacts", contactRoutes);
+app.use("/api/payments", paymentRoutes);
+app.use("/api/memberships", membershipRoutes);
 
 app.use("/uploads", express.static("uploads"));
 
-
+membershipExpiryJob();
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
