@@ -1,11 +1,19 @@
 const cloudinary = require("cloudinary").v2;
-const cloudConfig = require("./cloudinary_env");
+
+if (
+  !process.env.CLOUDINARY_CLOUD_NAME ||
+  !process.env.CLOUDINARY_API_KEY ||
+  !process.env.CLOUDINARY_API_SECRET
+) {
+  throw new Error("Cloudinary environment variables missing");
+}
 
 cloudinary.config({
-  cloud_name: cloudConfig.cloud_name,
-  api_key: cloudConfig.api_key,
-  api_secret: cloudConfig.api_secret,
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 module.exports = cloudinary;
+
 
