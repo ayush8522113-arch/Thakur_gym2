@@ -1,18 +1,5 @@
 const mongoose = require("mongoose");
 
-const mediaSchema = new mongoose.Schema({
-  type: {
-    type: String,
-    enum: ["image", "video"],
-    required: true,
-  },
-  url: {
-    type: String,
-    required: true,
-  },
-});
-
-
 const noticeSchema = new mongoose.Schema(
   {
     title: {
@@ -22,13 +9,18 @@ const noticeSchema = new mongoose.Schema(
     description: {
       type: String,
     },
-   media: [mediaSchema],   // ✅ ARRAY OF OBJECTS
-    createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "admin",
+
+    // Cloudinary fields
+    mediaUrl: {
+      type: String, // full Cloudinary URL
+    },
+    mediaType: {
+      type: String,
+      enum: ["image", "video"],
     },
   },
   { timestamps: true }
 );
 
 module.exports = mongoose.model("Notice", noticeSchema);
+

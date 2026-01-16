@@ -1,60 +1,99 @@
 const Notice = require("../models/Notice");
 
-// CREATE NOTICE (ADMIN)
-// noticeController.js
-
-exports.uploadNoticeMedia = async (req, res) => {
-
-
-  const notice = await Notice.findById(req.params.id);
-  if (!notice) {
-    return res.status(404).json({ message: "Notice not found" });
-  }
-
-  const files = req.files.map((file) => ({
-    type: file.mimetype.startsWith("video") ? "video" : "image",
-    url: `/uploads/${file.filename}`,
-  }));
-
-  notice.media.push(...files);
-  await notice.save();
-
-  res.json({ success: true });
-};
-
-
-
+/**
+ * ============================
+ * CREATE NOTICE (ADMIN)
+ * Text-only notice creation
+ * ============================
+ */
 exports.createNotice = async (req, res) => {
-  const { title, description } = req.body;
+  try {
+    const { title, description } = req.body;
 
-  if (!title || !description) {
-    return res.status(400).json({ message: "Title and description required" });
+    if (!title || !description) {
+      return res
+        .status(400)
+        .json({ message: "Title and description required" });
+    }
+
+    const notice = await Notice.create({
+      title,
+      description,
+      createdBy: req.user._id,
+    });
+
+    res.status(201).json({
+      success: true,
+      noticeId: notice._id,
+    });
+  } catch (error) {
+    console.error("Create notice error:", error);
+    res.status(500).json({ message: "Failed to create notice" });
   }
-
-  const notice = await Notice.create({
-    title,
-    description,
-    createdBy: req.user._id,
-  });
-
-  res.status(201).json({
-    success: true,
-    noticeId: notice._id,
-  });
 };
 
+/**
+ * ============================
+ * UPLOAD NOTICE MEDIA (ADMIN)
+ * Cloudinary upload
+ * ============================
+ */
+exports.uploadNoticeMedia = async (req, res) => {
+  try {
+     console.log("🔥 uploadNoticeMedia HIT");
+    console.log("FILE:", req.file);
+    console.log("FILES:", req.files);
+    console.log("HEADERS:", req.headers);
+    const notice = await Notice.findById(req.params.id);
 
-// GET ALL NOTICES (PUBLIC)
+    if (!notice) {
+      return res.status(404).json({ message: "Notice not found" });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    // Cloudinary result
+    notice.mediaUrl = req.file.path;
+    notice.mediaType =
+      req.file.resource_type === "video" ? "video" : "image";
+
+    await notice.save();
+
+    res.json({
+      success: true,
+      message: "Media uploaded successfully",
+      mediaUrl: notice.mediaUrl,
+      mediaType: notice.mediaType,
+    });
+  } catch (error) {
+    console.error("Upload notice media error:", error);
+    res.status(500).json({ message: "Media upload failed" });
+  }
+};
+
+/**
+ * ============================
+ * GET ALL NOTICES (PUBLIC)
+ * ============================
+ */
 exports.getNotices = async (req, res) => {
   try {
     const notices = await Notice.find().sort({ createdAt: -1 });
     res.json(notices);
   } catch (error) {
+    console.error("Get notices error:", error);
     res.status(500).json({ error: error.message });
   }
 };
 
-// UPDATE NOTICE (ADMIN)
+/**
+ * ============================
+ * UPDATE NOTICE (ADMIN)
+ * Text update only
+ * ============================
+ */
 exports.updateNotice = async (req, res) => {
   try {
     const notice = await Notice.findByIdAndUpdate(
@@ -68,15 +107,21 @@ exports.updateNotice = async (req, res) => {
     }
 
     res.json({
+      success: true,
       message: "Notice updated successfully",
       notice,
     });
   } catch (error) {
+    console.error("Update notice error:", error);
     res.status(500).json({ error: error.message });
   }
 };
 
-// DELETE NOTICE (ADMIN)
+/**
+ * ============================
+ * DELETE NOTICE (ADMIN)
+ * ============================
+ */
 exports.deleteNotice = async (req, res) => {
   try {
     const notice = await Notice.findByIdAndDelete(req.params.id);
@@ -85,9 +130,12 @@ exports.deleteNotice = async (req, res) => {
       return res.status(404).json({ message: "Notice not found" });
     }
 
-    res.json({ message: "Notice deleted successfully" });
+    res.json({
+      success: true,
+      message: "Notice deleted successfully",
+    });
   } catch (error) {
+    console.error("Delete notice error:", error);
     res.status(500).json({ error: error.message });
   }
 };
-

@@ -52,7 +52,7 @@ app.use("/api/contacts", contactRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/memberships", membershipRoutes);
 
-app.use("/uploads", express.static("uploads"));
+
 
 membershipExpiryJob();
 const PORT = process.env.PORT || 5000;
