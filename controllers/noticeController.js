@@ -40,46 +40,32 @@ exports.createNotice = async (req, res) => {
  */
 exports.uploadNoticeMedia = async (req, res) => {
   try {
-     console.log("🔥 uploadNoticeMedia HIT");
-    console.log("FILE:", req.file);
-    console.log("FILES:", req.files);
-    console.log("HEADERS:", req.headers);
     const notice = await Notice.findById(req.params.id);
-
     if (!notice) {
       return res.status(404).json({ message: "Notice not found" });
     }
 
-   // 🔴 ADD THIS BLOCK HERE
-if (!req.files || req.files.length === 0) {
-  return res.status(400).json({ message: "No files uploaded" });
-}
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ message: "No files uploaded" });
+    }
 
-const uploadedMedia = req.files.map((file) => ({
-  url: file.path, // Cloudinary URL
-  type: file.resource_type === "video" ? "video" : "image",
-}));
+    const uploadedMedia = req.files.map((file) => ({
+      url: file.path, // Cloudinary URL
+      type: file.resource_type === "video" ? "video" : "image",
+    }));
 
-notice.media = uploadedMedia;
-await notice.save();
+    // ✅ APPEND, DON'T OVERWRITE
+    notice.media.push(...uploadedMedia);
 
-    res.json({
-      success: true,
-      message: "Media uploaded successfully",
-      mediaUrl: notice.mediaUrl,
-      mediaType: notice.mediaType,
-    });
-  } catch (error) {
-    console.error("Upload notice media error:", error);
+    await notice.save();
+
+    res.json({ success: true, media: notice.media });
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Media upload failed" });
   }
 };
 
-/**
- * ============================
- * GET ALL NOTICES (PUBLIC)
- * ============================
- */
 exports.getNotices = async (req, res) => {
   try {
     const notices = await Notice.find().sort({ createdAt: -1 });
