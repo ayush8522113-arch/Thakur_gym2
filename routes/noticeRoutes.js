@@ -52,7 +52,7 @@ router.post(
   "/:id/upload",
   protect,
   adminOnly,
-  upload.single("media"),
+  upload.array("media", 10),
   uploadNoticeMedia
 );
 

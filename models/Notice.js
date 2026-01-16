@@ -11,13 +11,16 @@ const noticeSchema = new mongoose.Schema(
     },
 
     // Cloudinary fields
-    mediaUrl: {
-      type: String, // full Cloudinary URL
-    },
-    mediaType: {
+    media: [
+  {
+    url: String,
+    type: {
       type: String,
       enum: ["image", "video"],
     },
+  },
+],
+
   },
   { timestamps: true }
 );

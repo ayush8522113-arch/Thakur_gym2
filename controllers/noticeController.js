@@ -50,16 +50,18 @@ exports.uploadNoticeMedia = async (req, res) => {
       return res.status(404).json({ message: "Notice not found" });
     }
 
-    if (!req.file) {
-      return res.status(400).json({ message: "No file uploaded" });
-    }
+   // 🔴 ADD THIS BLOCK HERE
+if (!req.files || req.files.length === 0) {
+  return res.status(400).json({ message: "No files uploaded" });
+}
 
-    // Cloudinary result
-    notice.mediaUrl = req.file.path;
-    notice.mediaType =
-      req.file.resource_type === "video" ? "video" : "image";
+const uploadedMedia = req.files.map((file) => ({
+  url: file.path, // Cloudinary URL
+  type: file.resource_type === "video" ? "video" : "image",
+}));
 
-    await notice.save();
+notice.media = uploadedMedia;
+await notice.save();
 
     res.json({
       success: true,
