@@ -27,9 +27,10 @@ const app = express();
 app.use(
   cors({
      origin: [
-      "https://thakurgym.netlify.app",
+      "https://thakurgym.vercel.app",
        "https://thakurgym.com",
       "https://www.thakurgym.com",
+
       
     ], // frontend
     credentials: true,
