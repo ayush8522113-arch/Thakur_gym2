@@ -27,7 +27,7 @@ const app = express();
 app.use(
   cors({
      origin: [
-      "https://thakurgym.vercel.app",
+      "https://thakur-gym.vercel.app",
        "https://thakurgym.com",
       "https://www.thakurgym.com",
 
