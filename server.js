@@ -18,7 +18,7 @@ import userRoutes from "./routes/userRoutes.js";
 import contactRoutes from "./routes/contactRoutes.js";
 import paymentRoutes from "./routes/payment.routes.js";
 import membershipRoutes from "./routes/membership.routes.js";
-
+import reviewRoutes from "./routes/reviewRoutes.js";
 
 connectDB();
 
@@ -51,7 +51,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/contacts", contactRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/memberships", membershipRoutes);
-
+app.use("/api/reviews", reviewRoutes);
 
 
 membershipExpiryJob();
