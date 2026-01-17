@@ -1,12 +1,16 @@
 import multer from "multer";
 
-const storage = multer.diskStorage({
-  destination: "uploads/reviews",
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
+/**
+ * Cloudinary requires file in memory (buffer),
+ * NOT stored on disk
+ */
+const storage = multer.memoryStorage();
+
+const uploadReviewImage = multer({
+  storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
   },
 });
-
-const uploadReviewImage = multer({ storage });
 
 export default uploadReviewImage;

@@ -2,7 +2,7 @@ import express from "express";
 import Review from "../models/Review.js";
 import upload from "../middleware/uploadReviewImage.js";
 import { protect, adminOnly } from "../middleware/authMiddleware.js";
-
+import cloudinary from "../config/cloudinary.js";
 const router = express.Router();
 console.log("REVIEW ROUTES FILE LOADED");
 
@@ -11,41 +11,48 @@ router.get("/test", (req, res) => {
 });
 
 /**
- * @route   POST /api/reviews
- * @desc    Add a new review
- * @access  Public
+ * @route POST /api/reviews
+ * @desc  Add review (Cloudinary image)
  */
-router.post(
-  "/",
-  upload.single("image"),
-  async (req, res) => {
-    try {
-      const { name, rating, description, about } = req.body;
+router.post("/", upload.single("image"), async (req, res) => {
+  try {
+    const { name, rating, description, about } = req.body;
 
-      if (!name || !rating || !description) {
-        return res.status(400).json({
-          message: "Name, rating and description are required",
-        });
-      }
-
-      const review = await Review.create({
-        name,
-        rating: Number(rating),
-        description,
-        about,
-        image: req.file
-          ? `/uploads/reviews/${req.file.filename}`
-          : "",
-        isApproved: true,
+    if (!name || !rating || !description) {
+      return res.status(400).json({
+        message: "Name, rating and description are required",
       });
-
-      res.status(201).json(review);
-    } catch (error) {
-      console.error("Add Review Error:", error);
-      res.status(500).json({ message: "Server error" });
     }
+
+    let imageUrl = "";
+
+    // 🔥 Upload image to Cloudinary
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(
+        `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`,
+        {
+          folder: "gym-reviews",
+        }
+      );
+
+      imageUrl = result.secure_url;
+    }
+
+    const review = await Review.create({
+      name,
+      rating: Number(rating),
+      description,
+      about,
+      image: imageUrl, // ✅ Cloudinary URL
+      isApproved: true,
+    });
+
+    res.status(201).json(review);
+  } catch (error) {
+    console.error("Add Review Error:", error);
+    res.status(500).json({ message: "Server error" });
   }
-);
+});
 
 /**
  * @route   GET /api/reviews
