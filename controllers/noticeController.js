@@ -36,7 +36,7 @@ exports.createNotice = async (req, res) => {
  * ============================
  * UPLOAD NOTICE MEDIA (ADMIN)
  * Cloudinary upload
- * ============================
+ * ============================--
  */
 exports.uploadNoticeMedia = async (req, res) => {
   try {
@@ -62,7 +62,7 @@ exports.uploadNoticeMedia = async (req, res) => {
     res.json({ success: true, media: notice.media });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Media upload failed" });
+    res.status(500).json({ message: "Media upload faileded" });
   }
 };
 
